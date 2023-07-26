@@ -33,6 +33,22 @@ public class Product {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
     public void setId(String id) {
         this.id = id;
     }

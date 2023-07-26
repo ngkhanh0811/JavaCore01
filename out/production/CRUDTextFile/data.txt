@@ -1,2 +1,2 @@
-1,pro1,manu1,cate1,111
-2,name2,manu2,cate2,123
+1,p,p,c,11
+2,p22,pp22,c222,2222
