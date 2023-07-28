@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ProductServiceImpl<T> {
     Scanner obj1 = new Scanner(System.in);
@@ -27,7 +29,7 @@ public class ProductServiceImpl<T> {
         System.out.println();
     }
 
-    public BufferedReader readFile(){
+    public BufferedReader readFile() {
         BufferedReader reader = null;
         try {
             File myObj = new File("D:\\Training-TASC\\CRUDTextFile\\src\\data.txt");
@@ -37,7 +39,7 @@ public class ProductServiceImpl<T> {
                 System.out.println("File created successfully.");
             }
             reader = new BufferedReader(new FileReader("D:\\Training-TASC\\CRUDTextFile\\src\\data.txt"));
-        } catch (Exception e){
+        } catch (Exception e) {
             System.err.println(e);
         }
         return reader;
@@ -62,24 +64,30 @@ public class ProductServiceImpl<T> {
                 System.err.println();
             }
         }
-            myReader.close();
+        myReader.close();
     }
 
-    public String getId(){
+    public String getId() throws IOException {
+        BufferedReader reader = readFile();
+        String line = null;
+        List<String> list = new ArrayList<>();
         do {
             System.out.println("Enter id:");
             String id = obj1.nextLine().trim();
+            while ((line = reader.readLine()) != null) {
+                String[] arr = line.split(",");
+                list.add(arr[0]);
+            }
             if (id.matches("[1-9]") && !id.isEmpty()) {
-                return id;
-            } else{
+                if (list.contains(id)) {
+                    return id;
+                } else {
+                    System.err.println("Cannot found id!");
+                }
+            } else {
                 System.err.println("Please enter number for id!");
             }
         } while (true);
-    }
-
-    public static void main(String[] args) {
-        ProductServiceImpl service = new ProductServiceImpl();
-        System.out.println(service.getId());
     }
 
     public void getById() throws IOException {
@@ -91,30 +99,30 @@ public class ProductServiceImpl<T> {
 
             String line;
             BufferedReader myReader = readFile();
-                while ((line = myReader.readLine()) != null) {
-                    try {
-                        String[] arr = line.split(",");
-                        String idProduct = arr[0];
-                        String name = arr[1];
-                        String manu = arr[2];
-                        String category = arr[3];
-                        BigDecimal price = new BigDecimal(arr[4]);
-                        product = new Product(idProduct, name, manu, category, price);
-                        if (id.matches("[1-9]")) {
-                            if (Integer.parseInt(product.getId()) == Integer.parseInt(id)) {
-                                found = true;
-                                displayHeader();
-                                displayProduct(product);
-                                break;
-                            }
+            while ((line = myReader.readLine()) != null) {
+                try {
+                    String[] arr = line.split(",");
+                    String idProduct = arr[0];
+                    String name = arr[1];
+                    String manu = arr[2];
+                    String category = arr[3];
+                    BigDecimal price = new BigDecimal(arr[4]);
+                    product = new Product(idProduct, name, manu, category, price);
+                    if (id.matches("[1-9]")) {
+                        if (Integer.parseInt(product.getId()) == Integer.parseInt(id)) {
+                            found = true;
+                            displayHeader();
+                            displayProduct(product);
+                            break;
                         }
-                    } catch (Exception e) {
-                        System.err.println(e);
                     }
+                } catch (Exception e) {
+                    System.err.println(e);
                 }
-            if (found == true){
+            }
+            if (found == true) {
                 break;
-            } else{
+            } else {
                 System.err.println("Cannot found id!");
             }
         } while (true);
@@ -123,7 +131,7 @@ public class ProductServiceImpl<T> {
     public void searchByName() throws IOException {
         boolean found = false;
         do {
-            System.out.println("Enter search string:");
+            System.out.println("Enter product name:");
             String searchString = obj1.nextLine().trim();
             Product product;
             String line;
@@ -138,21 +146,22 @@ public class ProductServiceImpl<T> {
                     String category = arr[3];
                     BigDecimal price = new BigDecimal(arr[4]);
                     product = new Product(idProduct, name, manu, category, price);
-                        if ((product.getName()).contains(searchString) == true) {
-                            found = true;
-                            displayProduct(product);
-                        }
+                    if ((product.getName()).contains(searchString) == true) {
+                        found = true;
+                        displayProduct(product);
+                    }
                 } catch (Exception e) {
                     System.err.println(e);
                 }
             }
-            if (found == true){
+            if (found == true) {
                 break;
-            } else{
+            } else {
                 System.err.println("Cannot found item!");
             }
         } while (true);
     }
+
     public void addNewItem() {
         String priceCreate;
         ArrayList<Integer> list1 = new ArrayList<>();
@@ -181,12 +190,12 @@ public class ProductServiceImpl<T> {
                     max = value;
                 }
             }
-            // Generate id auto increment with value = max of id + 1
+            // Generate id auto increment with value = max id + 1
             String idCreate = String.valueOf(max + 1);
             do {
                 System.out.println("Enter product name:");
                 nameCreate = obj1.nextLine().trim();
-                if (!nameCreate.contains(",") && !nameCreate.isEmpty()){
+                if (!nameCreate.contains(",") && !nameCreate.isEmpty()) {
                     break;
                 }
                 System.out.println("Product name is invalid");
@@ -194,7 +203,7 @@ public class ProductServiceImpl<T> {
             do {
                 System.out.println("Enter manufacturer name:");
                 manuCreate = obj1.nextLine().trim();
-                if (!manuCreate.contains(",") && !manuCreate.isEmpty()){
+                if (!manuCreate.contains(",") && !manuCreate.isEmpty()) {
                     break;
                 }
                 System.out.println("Manufacturer name is invalid");
@@ -202,7 +211,7 @@ public class ProductServiceImpl<T> {
             do {
                 System.out.println("Enter category name:");
                 cateCreate = obj1.nextLine().trim();
-                if (!cateCreate.contains(",") && !cateCreate.isEmpty()){
+                if (!cateCreate.contains(",") && !cateCreate.isEmpty()) {
                     break;
                 }
                 System.out.println("Category name is invalid");
@@ -224,12 +233,13 @@ public class ProductServiceImpl<T> {
                 }
                 System.out.println("Please enter number for price!");
             } while (true);
+            System.out.println("Created successfully!");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void update() throws IOException {
+    public void updateItem() throws IOException {
         String idUpdate = getId();
         String nameUpdate;
         String manuUpdate;
@@ -259,8 +269,6 @@ public class ProductServiceImpl<T> {
                 BigDecimal newPrice = new BigDecimal(priceUpdate);
                 Double priceToDouble = Double.parseDouble(priceUpdate);
                 if (priceToDouble > 0) {
-                    // Lấy ra product với giá trị sau update
-                    //todo: set giá trị mới vào đúng vị trí trong file
                     BufferedReader myReader = readFile();
                     displayHeader();
                     while ((line = myReader.readLine()) != null) {
@@ -272,15 +280,15 @@ public class ProductServiceImpl<T> {
                             String category = arr[3];
                             BigDecimal price = new BigDecimal(arr[4]);
                             product = new Product(idProduct, name, manufac, category, price);
-                            // If idUpdate is exists, set product with new value
-                            if (Integer.parseInt(product.getId()) == Integer.parseInt(idUpdate)){
+                            if (Integer.parseInt(product.getId()) == Integer.parseInt(idUpdate)) {
+                                // If idUpdate is exists, set this product with new value
                                 product.setName(nameUpdate);
                                 product.setManufacturer(manuUpdate);
                                 product.setCategory(cateUpdate);
                                 product.setPrice(newPrice);
                                 newData.append(product.toString());
                                 newData.append("\n");
-                            } else{
+                            } else {
                                 // If idUpdate is not exists, append current value
                                 newData.append(product.toString());
                                 newData.append("\n");
@@ -301,36 +309,35 @@ public class ProductServiceImpl<T> {
         } while (true);
     }
 
-    //todo: xử lí hàm delete
-//    public void deleteItem() {
-//        List<Product> productList = getData();
-//        List<Product> products = new ArrayList<>();
-//        String deleteId;
-//        do{
-//            System.out.println("Enter id: ");
-//            deleteId = obj1.nextLine().trim();
-//            if (deleteId.matches("[0-9]+(\\.[0-9]+)?") && Integer.parseInt(deleteId) > 0){
-//                String finalDeleteId = deleteId;
-//                productList.forEach(item -> {
-//                    // concurency modification exception -> bug nên phải dùng cách add những item không chọn vào list mới
-//                    // xóa list cũ -> add lại
-//                    if (!item.getId().equals(finalDeleteId)) {
-//                        products.add(item);
-//                        System.err.println("Cannot found id");
-//                    }
-//                });
-//                break;
-//            }
-//        } while (true);
-//
-//        try (BufferedWriter writer = new BufferedWriter(new FileWriter("D:\\Training-TASC\\CRUDTextFile\\src\\data.txt"))) {
-//            for (Product product : products) {
-//                writer.write(product.toString());
-//                writer.newLine();
-//            }
-//        } catch (IOException e) {
-//            System.out.println("An error occurred while writing to the file.");
-//            e.printStackTrace();
-//        }
-//    }
+    public void deleteItem() throws IOException {
+        String idDelete = getId();
+        StringBuilder newData = new StringBuilder();
+        String line;
+        Product product;
+        BufferedReader myReader = readFile();
+        displayHeader();
+        while ((line = myReader.readLine()) != null) {
+            try {
+                String[] arr = line.split(",");
+                String idProduct = arr[0];
+                String name = arr[1];
+                String manufac = arr[2];
+                String category = arr[3];
+                BigDecimal price = new BigDecimal(arr[4]);
+                product = new Product(idProduct, name, manufac, category, price);
+                // If idDelete is exists, write file again without this product
+                if (Integer.parseInt(product.getId()) != Integer.parseInt(idDelete)) {
+                    newData.append(product.toString());
+                    newData.append("\n");
+                }
+            } catch (Exception e) {
+                System.err.println();
+            }
+        }
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("D:\\Training-TASC\\CRUDTextFile\\src\\data.txt"));
+        bufferedWriter.write(newData.toString());
+        System.out.println("Deleted successfully");
+        bufferedWriter.close();
+        myReader.close();
+    }
 }

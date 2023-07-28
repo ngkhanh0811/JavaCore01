@@ -27,11 +27,11 @@ public class Main {
                     case 3:
                         productService.searchByName();
                         break;
-//                    case 4:
-//                        productService.deleteItem();
-//                        break;
+                    case 4:
+                        productService.deleteItem();
+                        break;
                     case 5:
-                        productService.update();
+                        productService.updateItem();
                         break;
                     case 6:
                         productService.addNewItem();
